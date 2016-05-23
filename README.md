@@ -24,3 +24,6 @@ Step.3) Run the service.
  $ rails s -b 0.0.0.0
 
 Then you can access the front page from http://[host IP address]:3000/
+
+
+[![Build Status](https://travis-ci.org/nasebanal/nb-bitcoin.svg)](https://travis-ci.org/nasebanal/nb-bitcoin)
