@@ -34,6 +34,9 @@ gem 'rest-client'
 gem 'less-rails'
 gem 'twitter-bootstrap-rails'
 
+# Highcharts
+gem 'lazy_high_charts'
+
 
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
