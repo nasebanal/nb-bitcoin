@@ -16,10 +16,13 @@ class HomeController < ApplicationController
 			@data.push([p['x']*1000, p['y']])
 		end
 
+		# comment out
+=begin
 		R.eval <<-EOF
 			test<-as.numeric(1+1)
 EOF
 		@test = R.test
+=end
 
 		@chart = LazyHighCharts::HighChart.new('graph') do |f|
 			f.title(text: "The Market Price of Bitcoin")

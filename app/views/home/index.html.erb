@@ -1,11 +1,15 @@
 <%= high_chart("some_id", @chart) %>
+<a href="/?duration=30days">30days</a> - 
+<a href="/?duration=60days">60days</a> -
+<a href="/?duration=90days">90days</a> -
+<a href="/?duration=180days">180days</a> -
+<a href="/?duration=1year">1 Year</a> -
+<a href="/?duration=2year">2 Year</a> -
+<a href="/?duration=all">All Time</a>
 
-<a href="/?duration=30days" class="btn btn-primary">30days</a>
-<a href="/?duration=60days" class="btn btn-primary">60days</a>
-<a href="/?duration=90days" class="btn btn-primary">90days</a>
-<a href="/?duration=180days" class="btn btn-primary">180days</a>
-<a href="/?duration=1year" class="btn btn-primary">1 Year</a>
-<a href="/?duration=2year" class="btn btn-primary">2 Year</a>
-<a href="/?duration=all" class="btn btn-primary">All Time</a>
+<input type="text" id="duration"> days 
+<div id="show_duration" class="btn btn-primary">Show</div>
+<div id="download" class="btn btn-primary">Download (CSV)</div>
+
 <br>
 <%= @data %>

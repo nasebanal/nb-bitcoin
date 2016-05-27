@@ -38,8 +38,10 @@ gem 'twitter-bootstrap-rails'
 gem 'lazy_high_charts'
 
 # RinRuby
-gem 'rinruby'
+# gem 'rinruby'
 
+# Turbolinks
+gem 'jquery-turbolinks'
 
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
