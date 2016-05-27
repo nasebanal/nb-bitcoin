@@ -14,6 +14,11 @@ class HomeController < ApplicationController
 			@data.push([p['x'], p['y']])
 		end
 
+		R.eval <<-EOF
+			test<-as.numeric(1+1)
+EOF
+		@test = R.test
+
 		@chart = LazyHighCharts::HighChart.new('graph') do |f|
 			f.title(:text => "The Market Price of Bitcoin")
 			f.subtitle(text: "source: blockchain.info")
