@@ -38,7 +38,8 @@ gem 'twitter-bootstrap-rails'
 gem 'lazy_high_charts'
 
 # RinRuby
-gem 'rinruby'
+gem 'rserve-client', require: 'rserve'
+#gem 'rinruby'
 
 
 # Use ActiveModel has_secure_password
