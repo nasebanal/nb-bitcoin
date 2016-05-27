@@ -1,5 +1,6 @@
 require 'rest-client'
 require 'json'
+require 'rserve'
 
 class HomeController < ApplicationController
 
@@ -14,10 +15,16 @@ class HomeController < ApplicationController
 			@data.push([p['x'], p['y']])
 		end
 
+		con=Rserve::Connection.new
+		x=con.eval('1+1')
+		@test = x.as_strings
+
+=begin
 		R.eval <<-EOF
 			test<-as.numeric(1+1)
 EOF
 		@test = R.test
+=end
 
 		@chart = LazyHighCharts::HighChart.new('graph') do |f|
 			f.title(:text => "The Market Price of Bitcoin")
