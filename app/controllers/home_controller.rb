@@ -4,14 +4,16 @@ require 'json'
 class HomeController < ApplicationController
 
 	def index
-		response = RestClient.get 'https://blockchain.info/charts/market-price?showDataPoints=false&timespan=all&show_header=true&daysAverageString=1&scale=0&format=json&address='
+		@duration = params[:duration]	
 
-#		@data = response
+		@url = "https://blockchain.info/charts/market-price?showDataPoints=false&timespan=%s&show_header=true&daysAverageString=1&scale=0&format=json&address=" % @duration
+
+		response = RestClient.get @url
 
 		@data_temp = JSON.parse(response)['values']
 		@data = []
 		@data_temp.each do |p|
-			@data.push([p['x'], p['y']])
+			@data.push([p['x']*1000, p['y']])
 		end
 
 		R.eval <<-EOF
@@ -20,14 +22,14 @@ EOF
 		@test = R.test
 
 		@chart = LazyHighCharts::HighChart.new('graph') do |f|
-			f.title(:text => "The Market Price of Bitcoin")
+			f.title(text: "The Market Price of Bitcoin")
 			f.subtitle(text: "source: blockchain.info")
 			f.xAxis(type: 'datetime')
 			f.yAxis [
-        {:title => {:text => "Value [USD]"} },
+        {title: {text: "Value [USD]"}, showFirstLabel: false },
  ]
-			f.legend(:align => 'right', :verticalAlign => 'top', :y => 75, :x => -50, :layout => 'vertical',)
-			f.plotOptions(area: {
+			f.legend(align: 'right', verticalAlign: 'top', y: 75, x: -50, layout: 'vertical',)
+			f.plotOptions(line: {
 				marker: {
 					radius: 0
 				},
@@ -43,7 +45,7 @@ EOF
 				yAxis: 0, 
 				data: @data
 			)
-			f.chart({:defaultSeriesType=>"area"})
+			f.chart({:defaultSeriesType=>"line"})
 		end
 
 	end
