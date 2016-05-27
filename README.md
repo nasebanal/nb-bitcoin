@@ -6,7 +6,7 @@ This is an open source project for Bitcoin.
 [Prerequisite]
 
 * Install Ruby On Rails
-* Install PostgreSQL Server
+* Install Rserve
 
 
 [How To Use]
@@ -15,9 +15,9 @@ Step.1) Get source code.
 
  $ git clone https://github.com/nasebanal/nb-bitcoin.git
 
-Step.2) Create Database.
+Step.2) Install gem files.
 
- $ rake db:migrate
+ $ bundle install
 
 Step.3) Run the service.
 
