@@ -23,7 +23,7 @@
 	</thead>
 
 	<tbody>
-		<% @records.each do |record| %>
+		<% @timeseries_record.each do |record| %>
 		<tr>
 			<th><%= record['date'] %></th>
 			<td><%= record['value'] %></td>
@@ -53,14 +53,14 @@
   </thead>
 
   <tbody>
-    <% @beps.each do |bep| %>
+    <% @bep_record.each do |record| %>
     <tr>
-      <th><%= bep['amount'] %></th>
-      <td><%= bep['transferwise'] %></td>
-      <td><%= bep['coinbase'] %></td>
-      <td><%= bep['coinbase_upper'] %></td>
-      <td><%= bep['coinbase_lower'] %></td>
-      <td><%= bep['winner'] %></td>
+      <th><%= record['amount'] %></th>
+      <td><%= record['transferwise'] %></td>
+      <td><%= record['coinbase'] %></td>
+      <td><%= record['coinbase_upper'] %></td>
+      <td><%= record['coinbase_lower'] %></td>
+      <td><%= record['winner'] %></td>
     </tr>
     <% end %>
   </tbody>>

@@ -14,41 +14,49 @@ class HomeController < ApplicationController
 
 		@json_data = JSON.parse(response)['values']
 		@timeseries_data = []
-		@records = []
-		@beps = []
-		@beps_data = []
+		@timeseries_record = []
+		@bep_coinbase = []
+		@bep_transferwise = []
+		@bep_record = []
 		counter = 0
 
 		@json_data.each do |p|
 			@timeseries_data.push([p['x']*1000, p['y']])
 
-			record = Hash.new
-			record['date'] = Time.at(p['x']*1000)
-			record['value'] = p['y']
+			data = Hash.new
+			data['date'] = Time.at(p['x']*1000)
+			data['value'] = p['y']
 
-			@records.push(record)
+			@timeseries_record.push(data)
 		end
 
-		for amount in 1..1000 do
+		(1..2000000).step(1000) {|amount|
 
-			bep = Hash.new
-			bep['amount'] = amount
+			data = Hash.new
+			data['amount'] = amount
 
 			if amount < 5000
-				bep['transferwise'] = amount * 0.01 + 3
+				data['transferwise'] = amount * 0.01 + 3
 			else
-				bep['transferwise'] = 5000 * 0.007 + (amount - 5000) * 0.01 + 3
+				data['transferwise'] = 5000 * 0.007 + (amount - 5000) * 0.01 + 3
 			end
 
 			if amount < 1000000
-				bep['bitcoin'] = amount * 0.01
+				data['coinbase'] = amount * 0.01
 			else
-				be['bitcoin'] = amount * 0.02
+				data['coinbase'] = 1000000 * 0.01 + (amount - 1000000) * 0.02
 			end
 
-			@beps_data.push([amount, bep['bitcoin'], bep['transferwise']])
-			@beps.push(bep)
-		end
+			if data['coinbase'] < data['transferwise']
+				data['winner'] = 'Coinbase'
+			else
+				data['winner'] = 'Transferwise'
+			end
+
+			@bep_coinbase.push([amount, data['coinbase']])
+			@bep_transferwise.push([amount, data['transferwise']])
+			@bep_record.push(data)
+		}
 
 		# comment out
 =begin
@@ -59,36 +67,9 @@ EOF
 =end
 
 		@timeseries_chart = LazyHighCharts::HighChart.new('graph') do |f|
-			f.title(text: "The Market Price of Bitcoin")
-			f.subtitle(text: "source: blockchain.info")
-			f.xAxis(type: 'datetime')
-			f.yAxis [
-        {title: {text: "Value [USD]"}, showFirstLabel: false },
- ]
-			f.legend(align: 'right', verticalAlign: 'top', y: 75, x: -50, layout: 'vertical',)
-			f.plotOptions(line: {
-				marker: {
-					radius: 0
-				},
-				lineWidth: 1,
-				states: {
-					hover: {
-						lineWidth: 1
-					}
-				}
-			})
-			f.series(
-				name: "Bitcoin", 
-				yAxis: 0, 
-				data: @timeseries_data
-			)
-			f.chart({:defaultSeriesType=>"line"})
-		end
-
-    @bep_chart = LazyHighCharts::HighChart.new('graph') do |f|
       f.title(text: "The Market Price of Bitcoin")
       f.subtitle(text: "source: blockchain.info")
-      f.xAxis(type: 'datetime')
+      f.xAxis(type: 'datatime')
       f.yAxis [
         {title: {text: "Value [USD]"}, showFirstLabel: false },
  ]
@@ -112,5 +93,35 @@ EOF
       f.chart({:defaultSeriesType=>"line"})
     end
 
+		@bep_chart = LazyHighCharts::HighChart.new('graph') do |f|
+			f.title(text: "Break Even Point between Coinbase and Transferwise")
+			f.xAxis({title: {text: "Amount [USD]"}, type: 'number'})
+			f.yAxis [
+        {title: {text: "Fee [USD]"}, showFirstLabel: false },
+ ]
+			f.legend(align: 'right', verticalAlign: 'top', y: 75, x: -50, layout: 'vertical',)
+			f.plotOptions(line: {
+				marker: {
+					radius: 0
+				},
+				lineWidth: 1,
+				states: {
+					hover: {
+						lineWidth: 1
+					}
+				}
+			})
+			f.series(
+				name: "Coinbase", 
+				yAxis: 0, 
+				data: @bep_coinbase
+			)
+			f.series(
+				name: "Transferwise",
+				yAxis: 0,
+				data: @bep_transferwise
+			)
+			f.chart({:defaultSeriesType=>"line"})
+		end
 	end
 end
