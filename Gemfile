@@ -43,6 +43,9 @@ gem 'lazy_high_charts'
 # Turbolinks
 gem 'jquery-turbolinks'
 
+#	Statistics
+gem 'descriptive-statistics'
+
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 

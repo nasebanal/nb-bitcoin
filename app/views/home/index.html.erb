@@ -1,4 +1,6 @@
-<%= high_chart("some_id", @chart) %>
+<h3>Time Series Analysis</h3>
+
+<%= high_chart("timeseries", @timeseries_chart) %>
 <a href="/?duration=30days">30days</a> - 
 <a href="/?duration=60days">60days</a> -
 <a href="/?duration=90days">90days</a> -
@@ -11,5 +13,56 @@
 <div id="show_duration" class="btn btn-primary">Show</div>
 <div id="download" class="btn btn-primary">Download (CSV)</div>
 
-<br>
-<%= @data %>
+<br><br>
+
+<table class="table table-hover table-sm">
+	<thead>
+		<th>Date</th>
+		<th>Original Value [USD]</th>
+		<th>Moving Average [USD]</th>
+	</thead>
+
+	<tbody>
+		<% @records.each do |record| %>
+		<tr>
+			<th><%= record['date'] %></th>
+			<td><%= record['value'] %></td>
+			<td><%= record['moving_ave'] %></td>
+		</tr>
+		<% end %>
+	</tbody>
+</table>
+
+<h3>Raw Data</h3>
+
+<%= @json_data %>
+
+<h3>Break Even Point</h3>
+
+<%= high_chart("bep", @bep_chart) %>
+
+<br><br>
+
+<table class="table table-hover table-sm">
+    <th>Amount</th>
+    <th>Fee (Transferwise) [USD]</th>
+    <th>Fee (Coinbase) [USD]</th>
+    <th>Loss (Coinbase Upper95%) [USD]</th>
+    <th>Loss (Coinbase Lower95%) [USD]</th>
+    <th>Winner</th>
+  </thead>
+
+  <tbody>
+    <% @beps.each do |bep| %>
+    <tr>
+      <th><%= bep['amount'] %></th>
+      <td><%= bep['transferwise'] %></td>
+      <td><%= bep['coinbase'] %></td>
+      <td><%= bep['coinbase_upper'] %></td>
+      <td><%= bep['coinbase_lower'] %></td>
+      <td><%= bep['winner'] %></td>
+    </tr>
+    <% end %>
+  </tbody>>
+</table>
+
