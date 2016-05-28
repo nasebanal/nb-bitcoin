@@ -47,8 +47,10 @@
     <th>Amount</th>
     <th>Fee (Transferwise) [USD]</th>
     <th>Fee (Coinbase) [USD]</th>
-    <th>Loss (Coinbase Upper95%) [USD]</th>
-    <th>Loss (Coinbase Lower95%) [USD]</th>
+    <th>Loss (Coinbase Upper 1STD) [USD]</th>
+    <th>Loss (Coinbase Lower 1STD) [USD]</th>
+		<th>Loss (Coinbase Upper 2STD) [USD]</th>
+		<th>Loss (Coinbase Lower 2STD) [USD]</th>
     <th>Winner</th>
   </thead>
 
@@ -58,8 +60,10 @@
       <th><%= record['amount'] %></th>
       <td><%= record['transferwise'] %></td>
       <td><%= record['coinbase'] %></td>
-      <td><%= record['coinbase_upper'] %></td>
-      <td><%= record['coinbase_lower'] %></td>
+      <td><%= record['coinbase_upper_1std'] %></td>
+      <td><%= record['coinbase_lower_1std'] %></td>
+			<td><%= record['coinbase_upper_2std'] %></td>
+      <td><%= record['coinbase_lower_2std'] %></td>
       <td><%= record['winner'] %></td>
     </tr>
     <% end %>

@@ -17,11 +17,17 @@ class HomeController < ApplicationController
 		timeseries_data = []
 		timeseries_ave = []
 		timeseries_hist = DescriptiveStatistics::Stats.new([0, 0, 0, 0, 0])
+		timeseries_diff = []
 		@timeseries_record = []
 		@bep_coinbase = []
+		@bep_coinbase_upper_1std = []
+		@bep_coinbase_lower_1std = []
+		@bep_coinbase_upper_2std = []
+		@bep_coinbase_lower_2std = []
 		@bep_transferwise = []
 		@bep_record = []
 		counter = 0
+		prev_data = 0
 
 		@json_data.each do |p|
 			timeseries_data.push([p['x']*1000, p['y']])
@@ -34,17 +40,20 @@ class HomeController < ApplicationController
       timeseries_hist.shift(1)
 			data['moving_ave'] = timeseries_hist.mean
 
-			if counter > 5
+			if counter > 4
 				timeseries_ave.push([p['x']*1000, data['moving_ave']])
 			else
 				timeseries_ave.push([p['x']*1000, data['value']])
 			end
 
+			timeseries_diff.push(data['value']-prev_data)
+
 			@timeseries_record.push(data)
 			counter = counter+1
+			prev_data = data['value']
 		end
 
-		(1..2000000).step(1000) {|amount|
+		(1..10000).step(100) {|amount|
 
 			data = Hash.new
 			data['amount'] = amount
@@ -52,7 +61,7 @@ class HomeController < ApplicationController
 			if amount < 5000
 				data['transferwise'] = amount * 0.01 + 3
 			else
-				data['transferwise'] = 5000 * 0.007 + (amount - 5000) * 0.01 + 3
+				data['transferwise'] = 5000 * 0.01 + (amount - 5000) * 0.007 + 3
 			end
 
 			if amount < 1000000
@@ -61,6 +70,13 @@ class HomeController < ApplicationController
 				data['coinbase'] = 1000000 * 0.01 + (amount - 1000000) * 0.02
 			end
 
+			stats = DescriptiveStatistics::Stats.new(timeseries_diff)
+
+			data['coinbase_upper_1std'] = data['coinbase'] + stats.standard_deviation
+			data['coinbase_lower_1std'] = data['coinbase'] - stats.standard_deviation
+			data['coinbase_upper_2std'] = data['coinbase'] + stats.standard_deviation*2
+			data['coinbase_lower_2std'] = data['coinbase'] - stats.standard_deviation*2
+
 			if data['coinbase'] < data['transferwise']
 				data['winner'] = 'Coinbase'
 			else
@@ -68,6 +84,10 @@ class HomeController < ApplicationController
 			end
 
 			@bep_coinbase.push([amount, data['coinbase']])
+			@bep_coinbase_upper_1std.push([amount, data['coinbase_upper_1std']])
+			@bep_coinbase_lower_1std.push([amount, data['coinbase_lower_1std']])
+			@bep_coinbase_upper_2std.push([amount, data['coinbase_upper_2std']])
+			@bep_coinbase_lower_2std.push([amount, data['coinbase_lower_2std']])
 			@bep_transferwise.push([amount, data['transferwise']])
 			@bep_record.push(data)
 		}
@@ -132,14 +152,34 @@ EOF
 			})
 			f.series(
 				name: "Coinbase", 
-				yAxis: 0, 
-				data: @bep_coinbase
+				data: @bep_coinbase,
+				lineWidth: 2
 			)
 			f.series(
 				name: "Transferwise",
-				yAxis: 0,
-				data: @bep_transferwise
+				data: @bep_transferwise,
+				lineWidth: 2
 			)
+			f.series(
+        name: "Coinbase (Upper 1STD)",
+        data: @bep_coinbase_upper_1std,
+				dashStyle: 'longdash'
+      )
+			f.series(
+        name: "Coinbase (Lower 1STD)",
+        data: @bep_coinbase_lower_1std,
+				dashStyle: 'longdash'
+      )
+=begin
+			f.series(
+        name: "Coinbase (Upper 2STD)",
+        data: @bep_coinbase_upper_2std
+      )
+			f.series(
+        name: "Coinbase (Lower 2STD)",
+        data: @bep_coinbase_lower_2std
+      )
+=end
 			f.chart({:defaultSeriesType=>"line"})
 		end
 	end
