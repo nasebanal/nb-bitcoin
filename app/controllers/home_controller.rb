@@ -1,5 +1,6 @@
 require 'rest-client'
 require 'json'
+require 'descriptive-statistics'
 require 'date'
 
 class HomeController < ApplicationController
@@ -13,7 +14,9 @@ class HomeController < ApplicationController
 		response = RestClient.get @url
 
 		@json_data = JSON.parse(response)['values']
-		@timeseries_data = []
+		timeseries_data = []
+		timeseries_ave = []
+		timeseries_hist = DescriptiveStatistics::Stats.new([0, 0, 0, 0, 0])
 		@timeseries_record = []
 		@bep_coinbase = []
 		@bep_transferwise = []
@@ -21,13 +24,24 @@ class HomeController < ApplicationController
 		counter = 0
 
 		@json_data.each do |p|
-			@timeseries_data.push([p['x']*1000, p['y']])
+			timeseries_data.push([p['x']*1000, p['y']])
 
 			data = Hash.new
 			data['date'] = Time.at(p['x']*1000)
 			data['value'] = p['y']
 
+			timeseries_hist.push(data['value'])
+      timeseries_hist.shift(1)
+			data['moving_ave'] = timeseries_hist.mean
+
+			if counter > 5
+				timeseries_ave.push([p['x']*1000, data['moving_ave']])
+			else
+				timeseries_ave.push([p['x']*1000, data['value']])
+			end
+
 			@timeseries_record.push(data)
+			counter = counter+1
 		end
 
 		(1..2000000).step(1000) {|amount|
@@ -69,7 +83,7 @@ EOF
 		@timeseries_chart = LazyHighCharts::HighChart.new('graph') do |f|
       f.title(text: "The Market Price of Bitcoin")
       f.subtitle(text: "source: blockchain.info")
-      f.xAxis(type: 'datatime')
+      f.xAxis(type: 'datetime')
       f.yAxis [
         {title: {text: "Value [USD]"}, showFirstLabel: false },
  ]
@@ -86,10 +100,15 @@ EOF
         }
       })
       f.series(
-        name: "Bitcoin",
+        name: "Actual Data",
         yAxis: 0,
-        data: @timeseries_data
+        data: timeseries_data
       )
+			f.series(
+				name: "Moving Average",
+				yAxis: 0,
+				data: timeseries_ave
+			)
       f.chart({:defaultSeriesType=>"line"})
     end
 
