@@ -29,6 +29,7 @@ class HomeController < ApplicationController
     timeseries_diff = []
 		differential_data = []
 		differential_ave = []
+		forcast_diff = []
     @timeseries_record = []
     counter = 0
     prev_data = 0
@@ -70,6 +71,10 @@ class HomeController < ApplicationController
       timeseries_ave.push([p['x']*1000, data['moving_ave']])
 			differential_ave.push([p['x']*1000, data['moving_ave']-prev_ave])
 
+			#----- Setup forcasting error -----
+
+			forcast_diff.push(data['moving_ave'] - data['value'])
+
 			@timeseries_record.push(data)
 			counter = counter+1
 			prev_data = data['value']
@@ -84,6 +89,7 @@ class HomeController < ApplicationController
 
 		stats_data = DescriptiveStatistics::Stats.new(timeseries_hist)
 		stats_diff = DescriptiveStatistics::Stats.new(timeseries_diff)
+		stats_forcast = DescriptiveStatistics::Stats.new(forcast_diff)
 
 		@desc_data = Hash.new
 		@desc_diff = Hash.new
@@ -109,7 +115,9 @@ class HomeController < ApplicationController
 		@result['latest_diff'] = differential_data[counter-1][1]
 		@result['latest_diff_mv'] = differential_ave[counter-1][1]
 		@result['appreciation_rate'] = appreciation_rate
-		@result['forcasted'] = prev_data * appreciation_rate
+		@result['forcast'] = prev_data * appreciation_rate
+		@result['forcast_err_mean'] = stats_forcast.mean
+		@result['forcast_err_std'] = stats_forcast.standard_deviation
 
 		#======= Prepare Data for Break Even Point =======
 
@@ -139,15 +147,21 @@ class HomeController < ApplicationController
 			appreciation = (appreciation_rate - 1) * amount
 
 			data['coinbase_adjusted'] = data['coinbase'] - appreciation
-			data['coinbase_upper_1std'] = data['coinbase'] - appreciation + stats_diff.standard_deviation / curr_rate * amount
-			data['coinbase_lower_1std'] = data['coinbase'] - appreciation - stats_diff.standard_deviation / curr_rate * amount
-			data['coinbase_upper_2std'] = data['coinbase'] - appreciation + stats_diff.standard_deviation / curr_rate * amount * 2
-			data['coinbase_lower_2std'] = data['coinbase'] - appreciation - stats_diff.standard_deviation / curr_rate * amount * 2
+			data['coinbase_upper_1std'] = data['coinbase'] - appreciation + stats_forcast.standard_deviation / curr_rate * amount
+			data['coinbase_lower_1std'] = data['coinbase'] - appreciation - stats_forcast.standard_deviation / curr_rate * amount
+			data['coinbase_upper_2std'] = data['coinbase'] - appreciation + stats_forcast.standard_deviation / curr_rate * amount * 2
+			data['coinbase_lower_2std'] = data['coinbase'] - appreciation - stats_forcast.standard_deviation / curr_rate * amount * 2
 
 			if data['coinbase'] < data['transferwise']
 				data['winner'] = 'Coinbase'
 			else
 				data['winner'] = 'Transferwise'
+			end
+
+			if data['coinbase_adjusted'] < data['transferwise']
+				data['winner_adjusted'] = 'Coinbase'
+			else
+				data['winner_adjusted'] = 'Transferwise'
 			end
 
 			@bep_coinbase.push([amount, data['coinbase']])
@@ -192,7 +206,7 @@ EOF
         data: timeseries_data
       )
 			f.series(
-				name: "Moving Average",
+				name: "Moving Average (5)",
 				yAxis: 0,
 				lineWidth: 2,
 				data: timeseries_ave
@@ -227,7 +241,7 @@ EOF
         data: differential_data
       )
 			f.series(
-        name: "Moving Average",
+        name: "Moving Average(5)",
         yAxis: 0,
 				lineWidth: 2,
         data: differential_ave

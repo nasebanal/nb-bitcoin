@@ -90,7 +90,7 @@
 <br>
 
 <table class="table table-hover table-sm">
-	<caption>Defferential Analysis Result</caption>
+	<caption>Defferential Analysis</caption>
   <thead>
     <th>Item</th>
     <th>Value</th>
@@ -113,12 +113,34 @@
       <th>Appreciation Rate</th>
       <td><%= number_with_precision(@result['appreciation_rate']) %></td>
     </tr>
+	</tbody>
+</table>
+
+<br>
+
+<table class="table table-hover table-sm">
+	<caption>Forcasting Result</caption>
+	<thead>
+		<th>Item</th>
+		<th>Value</th>
+	</thead>
+	<tbody>
 		<tr>
-			<th>Forcasted Rate</th>
-			<td><%= number_with_precision(@result['forcasted']) %></td>
+			<th>Forcasted Rate in the next round</th>
+			<td><%= number_with_precision(@result['forcast']) %></td>
+    </tr>
+		<tr>
+			<th>Forcast Error - Mean</th>
+			<td><%= number_with_precision(@result['forcast_err_mean']) %></td>
+		</tr>
+		<tr>
+			<th>Forcast Error - Standard Deviation</th>
+			<td><%= number_with_precision(@result['forcast_err_std']) %></td>
 		</tr>
 	</tbody>
 </table>
+
+
 
 <a name="bep" class="anchor"></a>
 <h3>Break Even Point</h3>
@@ -142,6 +164,7 @@
 		<th>Loss<br>(Coinbase Upper 2STD)<br>[USD]</th>
 		<th>Loss<br>(Coinbase Lower 2STD)<br>[USD]</th>
     <th>Winner</th>
+		<th>Adjusted Winner</th>
   </thead>
 
   <tbody>
@@ -155,7 +178,8 @@
       <td><%= number_with_precision(record['coinbase_lower_1std']) %></td>
 			<td><%= number_with_precision(record['coinbase_upper_2std']) %></td>
       <td><%= number_with_precision(record['coinbase_lower_2std']) %></td>
-      <td><%= number_with_precision(record['winner']) %></td>
+      <td><%= record['winner'] %></td>
+			<td><%= record['winner_adjusted'] %></td>
     </tr>
     <% end %>
   </tbody>>
