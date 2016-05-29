@@ -106,10 +106,7 @@ class HomeController < ApplicationController
 
     @bep_coinbase = []
 		@bep_coinbase_adjusted = []
-    @bep_coinbase_upper_1std = []
-    @bep_coinbase_lower_1std = []
-    @bep_coinbase_upper_2std = []
-    @bep_coinbase_lower_2std = []
+    @bep_coinbase_1std = []
     @bep_transferwise = []
     @bep_record = []
 
@@ -146,10 +143,7 @@ class HomeController < ApplicationController
 
 			@bep_coinbase.push([amount, data['coinbase']])
 			@bep_coinbase_adjusted.push([amount, data['coinbase_adjusted']])
-			@bep_coinbase_upper_1std.push([amount, data['coinbase_upper_1std']])
-			@bep_coinbase_lower_1std.push([amount, data['coinbase_lower_1std']])
-			@bep_coinbase_upper_2std.push([amount, data['coinbase_upper_2std']])
-			@bep_coinbase_lower_2std.push([amount, data['coinbase_lower_2std']])
+			@bep_coinbase_1std.push([amount, data['coinbase_upper_1std'], data['coinbase_lower_1std']])
 			@bep_transferwise.push([amount, data['transferwise']])
 			@bep_record.push(data)
 		}
@@ -295,19 +289,17 @@ EOF
 				lineWidth: 2
 			)
       f.series(
-        name: "Coinbase (adjusted with time trend)",
+        name: "Coinbase (adjusted with bitcoin's appreciation)",
         data: @bep_coinbase_adjusted,
 				lineWidth: 2
       )
 			f.series(
-        name: "Coinbase (Upper 1STD)",
-        data: @bep_coinbase_upper_1std,
-				dashStyle: 'longdash'
-      )
-			f.series(
-        name: "Coinbase (Lower 1STD)",
-        data: @bep_coinbase_lower_1std,
-				dashStyle: 'longdash'
+        name: "Coinbase (adjusted with bitcoin's appreciation and 1STD range)",
+        data: @bep_coinbase_1std,
+				type: 'arearange',
+				color: '#00ff00',
+				fillOpacity: 0.3,
+        zIndex: 0
       )
 			f.chart({:defaultSeriesType=>"line"})
 		end
