@@ -46,17 +46,42 @@
 
 <table class="table table-hover table-sm">
 	<thead>
-		<th>Item</th>
-		<th>Value</th>
+		<th>Statistic</th>
+		<th>Original Data</th>
+		<th>Differential</th>
 	</thead>
 
 	<tbody>
-		<% @stats_record.each do |record| %>
 		<tr>
-			<th><%= record['item'] %></th>
-			<td><%= record['value'] %></td>
+			<th>Num of Records</th>
+			<td><%= @desc_data['number'] %></td>
+			<td><%= @desc_diff['number'] %></td>
 		</tr>
-		<% end %>
+		<tr>
+			<th>Mean</th>
+			<td><%= @desc_data['mean'] %></td>
+			<td><%= @desc_diff['mean'] %></td>
+		</tr>
+		<tr>
+			<th>Standard Deviation</th>
+			<td><%= @desc_data['std'] %></td>
+			<td><%= @desc_diff['std'] %></td>
+		</tr>
+		<tr>
+			<th>Min</th>
+			<td><%= @desc_data['min'] %></td>
+			<td><%= @desc_diff['min'] %></td>
+		</tr>
+    <tr>
+      <th>Max</th>
+      <td><%= @desc_data['max'] %></td>
+      <td><%= @desc_diff['max'] %></td>
+    </tr>
+    <tr>
+      <th>Range</th>
+      <td><%= @desc_data['range'] %></td>
+      <td><%= @desc_diff['range'] %></td>
+    </tr>
 	</tbody>
 </table>
 
@@ -65,16 +90,21 @@
 
 <%= high_chart("bep", @bep_chart) %>
 
+<br>
+
+<%= high_chart("bep_confidence", @bep_chart_confidence) %>
+
 <br><br>
 
 <table class="table table-hover table-sm">
     <th>Amount</th>
-    <th>Fee (Transferwise) [USD]</th>
-    <th>Fee (Coinbase) [USD]</th>
-    <th>Loss (Coinbase Upper 1STD) [USD]</th>
-    <th>Loss (Coinbase Lower 1STD) [USD]</th>
-		<th>Loss (Coinbase Upper 2STD) [USD]</th>
-		<th>Loss (Coinbase Lower 2STD) [USD]</th>
+    <th>Fee<br>(Transferwise)<br>[USD]</th>
+    <th>Fee<br>(Coinbase)<br>[USD]</th>
+		<th>Fee<br>(Coinbase adjusted with Moving Average)<br>[USD]</th>
+    <th>Loss<br>(Coinbase Upper 1STD)<br>[USD]</th>
+    <th>Loss<br>(Coinbase Lower 1STD)<br>[USD]</th>
+		<th>Loss<br>(Coinbase Upper 2STD)<br>[USD]</th>
+		<th>Loss<br>(Coinbase Lower 2STD)<br>[USD]</th>
     <th>Winner</th>
   </thead>
 
@@ -82,13 +112,14 @@
     <% @bep_record.each do |record| %>
     <tr>
       <th><%= record['amount'] %></th>
-      <td><%= record['transferwise'] %></td>
-      <td><%= record['coinbase'] %></td>
-      <td><%= record['coinbase_upper_1std'] %></td>
-      <td><%= record['coinbase_lower_1std'] %></td>
-			<td><%= record['coinbase_upper_2std'] %></td>
-      <td><%= record['coinbase_lower_2std'] %></td>
-      <td><%= record['winner'] %></td>
+      <td><%= number_with_precision(record['transferwise']) %></td>
+      <td><%= number_with_precision(record['coinbase']) %></td>
+			<td><%= number_with_precision(record['coinbase_adjusted']) %></td>
+      <td><%= number_with_precision(record['coinbase_upper_1std']) %></td>
+      <td><%= number_with_precision(record['coinbase_lower_1std']) %></td>
+			<td><%= number_with_precision(record['coinbase_upper_2std']) %></td>
+      <td><%= number_with_precision(record['coinbase_lower_2std']) %></td>
+      <td><%= number_with_precision(record['winner']) %></td>
     </tr>
     <% end %>
   </tbody>>

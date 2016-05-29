@@ -77,17 +77,35 @@ class HomeController < ApplicationController
 		end
 
 		curr_rate = timeseries_hist[4]
+		appreciation_rate = (curr_rate + differential_ave[counter-1][1]) / curr_rate
 
 
 		#======= Prepare Data for Descriptive Statistics =======
 
-		@stats_record = []
+		stats_data = DescriptiveStatistics::Stats.new(timeseries_hist)
 		stats_diff = DescriptiveStatistics::Stats.new(timeseries_diff)
+
+		@desc_data = Hash.new
+		@desc_diff = Hash.new
+
+		@desc_data['number'] = timeseries_data.size
+		@desc_diff['number'] = timeseries_diff.size
+		@desc_data['mean'] = stats_data.mean
+		@desc_diff['mean'] = stats_diff.mean
+		@desc_data['std'] = stats_data.standard_deviation
+		@desc_diff['std'] = stats_diff.standard_deviation
+		@desc_data['min'] = stats_data.min
+		@desc_diff['min'] = stats_diff.min
+		@desc_data['max'] = stats_data.max
+		@desc_diff['max'] = stats_diff.max
+		@desc_data['range'] = stats_data.range
+		@desc_diff['range'] = stats_diff.range
 
 
 		#======= Prepare Data for Break Even Point =======
 
     @bep_coinbase = []
+		@bep_coinbase_adjusted = []
     @bep_coinbase_upper_1std = []
     @bep_coinbase_lower_1std = []
     @bep_coinbase_upper_2std = []
@@ -112,10 +130,13 @@ class HomeController < ApplicationController
 				data['coinbase'] = 1000000 * 0.01 + (amount - 1000000) * 0.02
 			end
 
-			data['coinbase_upper_1std'] = data['coinbase'] + stats_diff.mean + stats_diff.standard_deviation / curr_rate * amount
-			data['coinbase_lower_1std'] = data['coinbase'] + stats_diff.mean - stats_diff.standard_deviation / curr_rate * amount
-			data['coinbase_upper_2std'] = data['coinbase'] + stats_diff.mean + stats_diff.standard_deviation / curr_rate * amount * 2
-			data['coinbase_lower_2std'] = data['coinbase'] + stats_diff.mean - stats_diff.standard_deviation / curr_rate * amount * 2
+			appreciation = (appreciation_rate - 1) * amount
+
+			data['coinbase_adjusted'] = data['coinbase'] - appreciation
+			data['coinbase_upper_1std'] = data['coinbase'] - appreciation + stats_diff.standard_deviation / curr_rate * amount
+			data['coinbase_lower_1std'] = data['coinbase'] - appreciation - stats_diff.standard_deviation / curr_rate * amount
+			data['coinbase_upper_2std'] = data['coinbase'] - appreciation + stats_diff.standard_deviation / curr_rate * amount * 2
+			data['coinbase_lower_2std'] = data['coinbase'] - appreciation - stats_diff.standard_deviation / curr_rate * amount * 2
 
 			if data['coinbase'] < data['transferwise']
 				data['winner'] = 'Coinbase'
@@ -124,6 +145,7 @@ class HomeController < ApplicationController
 			end
 
 			@bep_coinbase.push([amount, data['coinbase']])
+			@bep_coinbase_adjusted.push([amount, data['coinbase_adjusted']])
 			@bep_coinbase_upper_1std.push([amount, data['coinbase_upper_1std']])
 			@bep_coinbase_lower_1std.push([amount, data['coinbase_lower_1std']])
 			@bep_coinbase_upper_2std.push([amount, data['coinbase_upper_2std']])
@@ -213,8 +235,39 @@ EOF
 
 		#======= Create Chart Data for Break Even Analysis
 
-		@bep_chart = LazyHighCharts::HighChart.new('graph') do |f|
-			f.title(text: "Break Even Point between Coinbase and Transferwise")
+    @bep_chart = LazyHighCharts::HighChart.new('graph') do |f|
+      f.title(text: "Break Even Point between Coinbase and Transferwise")
+      f.xAxis({title: {text: "Amount [USD]"}, type: 'number'})
+      f.yAxis [
+        {title: {text: "Fee [USD]"}, showFirstLabel: false },
+ ]
+      f.legend(align: 'right', verticalAlign: 'top', y: 75, x: -50, layout: 'vertical',)
+      f.plotOptions(line: {
+        marker: {
+          radius: 0
+        },
+        lineWidth: 1,
+        states: {
+          hover: {
+            lineWidth: 1
+          }
+        }
+      })
+      f.series(
+        name: "Coinbase",
+        data: @bep_coinbase,
+        lineWidth: 2
+      )
+      f.series(
+        name: "Transferwise",
+        data: @bep_transferwise,
+        lineWidth: 2
+      )
+      f.chart({:defaultSeriesType=>"line"})
+    end
+
+		@bep_chart_confidence = LazyHighCharts::HighChart.new('graph') do |f|
+			f.title(text: "Adjusted Break Even Point with time trend of Bitcoin exchange rate")
 			f.xAxis({title: {text: "Amount [USD]"}, type: 'number'})
 			f.yAxis [
         {title: {text: "Fee [USD]"}, showFirstLabel: false },
@@ -241,6 +294,11 @@ EOF
 				data: @bep_transferwise,
 				lineWidth: 2
 			)
+      f.series(
+        name: "Coinbase (adjusted with time trend)",
+        data: @bep_coinbase_adjusted,
+				lineWidth: 2
+      )
 			f.series(
         name: "Coinbase (Upper 1STD)",
         data: @bep_coinbase_upper_1std,
@@ -251,16 +309,6 @@ EOF
         data: @bep_coinbase_lower_1std,
 				dashStyle: 'longdash'
       )
-=begin
-			f.series(
-        name: "Coinbase (Upper 2STD)",
-        data: @bep_coinbase_upper_2std
-      )
-			f.series(
-        name: "Coinbase (Lower 2STD)",
-        data: @bep_coinbase_lower_2std
-      )
-=end
 			f.chart({:defaultSeriesType=>"line"})
 		end
 	end
