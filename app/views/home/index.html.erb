@@ -1,7 +1,6 @@
 <a name="timeseries" class="anchor"></a>
 <h3>Time Series Analysis</h3>
 
-<%= high_chart("timeseries", @timeseries_chart) %>
 <a href="/?duration=30days">30days</a> - 
 <a href="/?duration=60days">60days</a> -
 <a href="/?duration=90days">90days</a> -
@@ -13,6 +12,14 @@
 <input type="text" id="duration"> days 
 <div id="show_duration" class="btn btn-primary">Show</div>
 <div id="download" class="btn btn-primary">Download (CSV)</div>
+
+<br>
+
+<%= high_chart("timeseries", @timeseries_chart) %>
+
+<br>
+
+<%= high_chart("difference", @diff_chart) %>
 
 <br><br>
 
@@ -29,6 +36,25 @@
 			<th><%= record['date'] %></th>
 			<td><%= record['value'] %></td>
 			<td><%= record['moving_ave'] %></td>
+		</tr>
+		<% end %>
+	</tbody>
+</table>
+
+<a name="stats" class="anchor"></a>
+<h3>Descriptive Statistics</h3>
+
+<table class="table table-hover table-sm">
+	<thead>
+		<th>Item</th>
+		<th>Value</th>
+	</thead>
+
+	<tbody>
+		<% @stats_record.each do |record| %>
+		<tr>
+			<th><%= record['item'] %></th>
+			<td><%= record['value'] %></td>
 		</tr>
 		<% end %>
 	</tbody>
