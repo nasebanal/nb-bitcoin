@@ -24,10 +24,11 @@
 <br><br>
 
 <table class="table table-hover table-sm">
+	<caption>Bitcion' Exchange Rate</caption>
 	<thead>
 		<th>Date</th>
 		<th>Original Value [USD]</th>
-		<th>Moving Average [USD]</th>
+		<th>Moving Average(5) [USD]</th>
 	</thead>
 
 	<tbody>
@@ -35,7 +36,7 @@
 		<tr>
 			<th><%= record['date'] %></th>
 			<td><%= record['value'] %></td>
-			<td><%= record['moving_ave'] %></td>
+			<td><%= number_with_precision(record['moving_ave']) %></td>
 		</tr>
 		<% end %>
 	</tbody>
@@ -45,6 +46,7 @@
 <h3>Descriptive Statistics</h3>
 
 <table class="table table-hover table-sm">
+	<caption>Descriptive Statistics of Bitcoin</caption>
 	<thead>
 		<th>Statistic</th>
 		<th>Original Data</th>
@@ -59,29 +61,62 @@
 		</tr>
 		<tr>
 			<th>Mean</th>
-			<td><%= @desc_data['mean'] %></td>
-			<td><%= @desc_diff['mean'] %></td>
+			<td><%= number_with_precision(@desc_data['mean']) %></td>
+			<td><%= number_with_precision(@desc_diff['mean']) %></td>
 		</tr>
 		<tr>
 			<th>Standard Deviation</th>
-			<td><%= @desc_data['std'] %></td>
-			<td><%= @desc_diff['std'] %></td>
+			<td><%= number_with_precision(@desc_data['std']) %></td>
+			<td><%= number_with_precision(@desc_diff['std']) %></td>
 		</tr>
 		<tr>
 			<th>Min</th>
-			<td><%= @desc_data['min'] %></td>
-			<td><%= @desc_diff['min'] %></td>
+			<td><%= number_with_precision(@desc_data['min']) %></td>
+			<td><%= number_with_precision(@desc_diff['min']) %></td>
 		</tr>
     <tr>
       <th>Max</th>
-      <td><%= @desc_data['max'] %></td>
-      <td><%= @desc_diff['max'] %></td>
+      <td><%= number_with_precision(@desc_data['max']) %></td>
+      <td><%= number_with_precision(@desc_diff['max']) %></td>
     </tr>
     <tr>
       <th>Range</th>
-      <td><%= @desc_data['range'] %></td>
-      <td><%= @desc_diff['range'] %></td>
+      <td><%= number_with_precision(@desc_data['range']) %></td>
+      <td><%= number_with_precision(@desc_diff['range']) %></td>
     </tr>
+	</tbody>
+</table>
+
+<br>
+
+<table class="table table-hover table-sm">
+	<caption>Defferential Analysis Result</caption>
+  <thead>
+    <th>Item</th>
+    <th>Value</th>
+  </thead>
+
+  <tbody>
+    <tr>
+      <th>Latest Exchange Value</th>
+      <td><%= number_with_precision(@result['latest_data']) %></td>
+		</tr>
+    <tr>
+      <th>Latest Differential</th>
+      <td><%= number_with_precision(@result['latest_diff']) %></td>
+    </tr>
+    <tr>
+      <th>Latest Differential in Moving Average(5)</th>
+      <td><%= number_with_precision(@result['latest_diff_mv']) %></td>
+    </tr>
+    <tr>
+      <th>Appreciation Rate</th>
+      <td><%= number_with_precision(@result['appreciation_rate']) %></td>
+    </tr>
+		<tr>
+			<th>Forcasted Rate</th>
+			<td><%= number_with_precision(@result['forcasted']) %></td>
+		</tr>
 	</tbody>
 </table>
 
@@ -97,6 +132,7 @@
 <br><br>
 
 <table class="table table-hover table-sm">
+		<caption>Comparison of the service charge between Bitcoin and Transferwise</caption>
     <th>Amount</th>
     <th>Fee<br>(Transferwise)<br>[USD]</th>
     <th>Fee<br>(Coinbase)<br>[USD]</th>

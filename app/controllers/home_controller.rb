@@ -102,6 +102,15 @@ class HomeController < ApplicationController
 		@desc_diff['range'] = stats_diff.range
 
 
+		#======= Prepare Data for Differential Analysis Result =======
+
+		@result = Hash.new
+		@result['latest_data'] = prev_data
+		@result['latest_diff'] = differential_data[counter-1][1]
+		@result['latest_diff_mv'] = differential_ave[counter-1][1]
+		@result['appreciation_rate'] = appreciation_rate
+		@result['forcasted'] = prev_data * appreciation_rate
+
 		#======= Prepare Data for Break Even Point =======
 
     @bep_coinbase = []
