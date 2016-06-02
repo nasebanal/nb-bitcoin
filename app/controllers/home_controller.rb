@@ -127,7 +127,7 @@ class HomeController < ApplicationController
     @bep_transferwise = []
     @bep_record = []
 
-		(1..10000).step(100) {|amount|
+		(0..2000).step(100) {|amount|
 
 			data = Hash.new
 			data['amount'] = amount
@@ -138,11 +138,7 @@ class HomeController < ApplicationController
 				data['transferwise'] = 5000 * 0.01 + (amount - 5000) * 0.007 + 3
 			end
 
-			if amount < 1000000
-				data['coinbase'] = amount * 0.01
-			else
-				data['coinbase'] = 1000000 * 0.01 + (amount - 1000000) * 0.02
-			end
+			data['coinbase'] = amount * 0.02
 
 			appreciation = (appreciation_rate - 1) * amount
 
