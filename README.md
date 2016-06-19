@@ -9,13 +9,13 @@
 This is an open source project for Bitcoin.
 
 
-[Prerequisite]
+## Prerequisite
 
 * Install Ruby On Rails
 * Install Rserve
 
 
-[How To Use]
+## How To Use
 
 Step.1) Get source code.
 
@@ -31,5 +31,3 @@ Step.3) Run the service.
 
 Then you can access the front page from http://[host IP address]:3000/
 
-
-[![Build Status](https://travis-ci.org/nasebanal/nb-bitcoin.svg)](https://travis-ci.org/nasebanal/nb-bitcoin)
