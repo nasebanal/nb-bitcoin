@@ -4,3 +4,4 @@ rvm:
 before_script:
   - psql -c "CREATE USER nasebanal WITH PASSWORD 'nasebanal';" -U postgres
   - psql -c 'CREATE DATABASE "nb-bitcoin_test";' -U postgres
+script: bundle exec rspec spec
