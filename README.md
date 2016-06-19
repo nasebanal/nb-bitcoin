@@ -1,5 +1,11 @@
 # NASEBANAL Bitcoin
 
+[![Build Status](https://travis-ci.org/nasebanal/nb-bitcoin.svg)](https://travis-ci.org/nasebanal/nb-bitcoin)
+[![Code Climate](https://codeclimate.com/github/nasebanal/nb-bitcoin/badges/gpa.svg)](https://codeclimate.com/github/nasebanal/nb-bitcoin)
+[![Test Coverage](https://codeclimate.com/github/nasebanal/nb-bitcoin/badges/coverage.svg)](https://codeclimate.com/github/nasebanal/nb-bitcoin/coverage)
+[![Issue Count](https://codeclimate.com/github/nasebanal/nb-bitcoin/badges/issue_count.svg)](https://codeclimate.com/github/nasebanal/nb-bitcoin)
+[![Inline docs](http://inch-ci.org/github/nasebanal/nb-bitcoin.svg?branch=master)](http://inch-ci.org/github/nasebanal/nb-bitcoin)
+
 This is an open source project for Bitcoin.
 
 
