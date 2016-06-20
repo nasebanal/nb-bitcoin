@@ -11,16 +11,28 @@ $(document).on "click", "#download", (e)->
 
 $(document).on "click", "#timeseries_menu", (e)->
 	event.preventDefault()
-	$("html,body").animate({scrollTop:$('#timeseries').offset().top-70})
+	if location.href.match(/herokuapp.com/)
+		window.location.href = "#timeseries"
+	else
+		$("html,body").animate({scrollTop:$('#timeseries').offset().top-70})
 
 $(document).on "click", "#stats_menu", (e)->
   event.preventDefault()
-  $("html,body").animate({scrollTop:$('#stats').offset().top-70})
+	if location.href.match(/herokuapp.com/)
+		window.location.href = "#stats"
+	else
+  	$("html,body").animate({scrollTop:$('#stats').offset().top-70})
 
 $(document).on "click", "#bep_menu", (e)->
   event.preventDefault()
-  $("html,body").animate({scrollTop:$('#bep').offset().top-70})
+	if location.href.match(/herokuapp.com/)
+    window.location.href = "#bep"
+  else
+  	$("html,body").animate({scrollTop:$('#bep').offset().top-70})
 
 $(document).on "click", "#raw_data_menu", (e)->
   event.preventDefault()
-  $("html,body").animate({scrollTop:$('#raw_data').offset().top-70})
+	location.href.match(/herokuapp.com/)
+    window.location.href = "#raw_data"
+  else
+	  $("html,body").animate({scrollTop:$('#raw_data').offset().top-70})
