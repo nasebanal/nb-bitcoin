@@ -1,5 +1,5 @@
-<div id="timeseries">
-<h3>Time Series Analysis</h3>
+<a name="timeseries"></a>
+<h3 id="timeseries">Time Series Analysis</h3>
 
 <a href="/?duration=30days">30days</a> - 
 <a href="/?duration=60days">60days</a> -
@@ -41,8 +41,9 @@
 		<% end %>
 	</tbody>
 </table>
-</div>
 
+
+<a name="stats"></a>
 <h3 id="stats">Descriptive Statistics</h3>
 
 <table class="table table-hover table-sm">
@@ -141,7 +142,7 @@
 </table>
 
 
-
+<a name="bep"></a>
 <h3 id="bep">Break Even Point</h3>
 
 <%= high_chart("bep_chart", @bep_chart) %>
@@ -184,6 +185,8 @@
   </tbody>>
 </table>
 
+
+<a name="raw_data"></a>
 <h3 id="raw_data">Raw Data</h3>
 
 <%= @json_data %>
