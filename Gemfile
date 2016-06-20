@@ -49,6 +49,7 @@ gem 'jquery-turbolinks'
 #	Statistics
 gem 'descriptive-statistics'
 
+
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
@@ -77,5 +78,9 @@ group :test do
   gem 'minitest-reporters'
 	gem 'mini_backtrace'
 	gem 'guard'
+end
+
+group :production do
+	gem 'rails_12factor'
 end
 
