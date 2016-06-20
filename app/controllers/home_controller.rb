@@ -5,20 +5,13 @@ require 'date'
 
 class HomeController < ApplicationController
 
+	before_action :get_param
+
 	def index
-
-		#======= Get Prameters =======
-
-		@duration = params[:duration]	|| "30days"
-		@amount = params[:amount] || 100
-
 
 		#======= Get Bitcoin Data =======
 
-		@url = "https://blockchain.info/charts/market-price?showDataPoints=false&timespan=%s&show_header=true&daysAverageString=1&scale=0&format=json&address=" % @duration
-
-		response = RestClient.get @url
-		@json_data = JSON.parse(response)['values']
+		get_data
 
 
 		#======= Prepare data for Time Series Analysis =======
@@ -91,33 +84,13 @@ class HomeController < ApplicationController
 		stats_diff = DescriptiveStatistics::Stats.new(timeseries_diff)
 		stats_forcast = DescriptiveStatistics::Stats.new(forcast_diff)
 
-		@desc_data = Hash.new
-		@desc_diff = Hash.new
-
-		@desc_data['number'] = timeseries_data.size
-		@desc_diff['number'] = timeseries_diff.size
-		@desc_data['mean'] = stats_data.mean
-		@desc_diff['mean'] = stats_diff.mean
-		@desc_data['std'] = stats_data.standard_deviation
-		@desc_diff['std'] = stats_diff.standard_deviation
-		@desc_data['min'] = stats_data.min
-		@desc_diff['min'] = stats_diff.min
-		@desc_data['max'] = stats_data.max
-		@desc_diff['max'] = stats_diff.max
-		@desc_data['range'] = stats_data.range
-		@desc_diff['range'] = stats_diff.range
+		set_desc_stats(timeseries_data, timeseries_diff, stats_data, stats_diff)
 
 
 		#======= Prepare Data for Differential Analysis Result =======
 
-		@result = Hash.new
-		@result['latest_data'] = prev_data
-		@result['latest_diff'] = differential_data[counter-1][1]
-		@result['latest_diff_mv'] = differential_ave[counter-1][1]
-		@result['appreciation_rate'] = appreciation_rate
-		@result['forcast'] = prev_data * appreciation_rate
-		@result['forcast_err_mean'] = stats_forcast.mean
-		@result['forcast_err_std'] = stats_forcast.standard_deviation
+		set_diff_result(differential_data, differential_ave, prev_data, appreciation_rate, stats_forcast)
+
 
 		#======= Prepare Data for Break Even Point =======
 
@@ -175,9 +148,72 @@ EOF
 		@test = R.test
 =end
 
+		#======= Prepare Chart Data =======
+
+		set_timeseries_chart(timeseries_data, timeseries_ave)
+		set_diff_chart(differential_data, differential_ave)
+		set_bep_chart(@bep_coinbase, @bep_transferwise)
+		set_bepconf_chart(@bep_coinbase, @bep_transferwise, @bep_coinbase_adj, @bep_coinbase_1std)
+
+	end
+
+
+	private
+
+
+	def get_param
+    @duration = params[:duration] || "30days"
+    @amount = params[:amount] || 100
+	end
+
+
+	def get_data
+    url = "https://blockchain.info/charts/market-price?showDataPoints=false&timespan=%s&show_header=true&daysAverageString=1&scale=0&format=json&address=" % @duration
+    response = RestClient.get url
+    @json_data = JSON.parse(response)['values']
+	end
+
+
+	def set_desc_stats(timeseries_data, timeseries_diff, stats_data, stats_diff)
+
+    @desc_data = Hash.new
+    @desc_diff = Hash.new
+
+    @desc_data['number'] = timeseries_data.size
+    @desc_diff['number'] = timeseries_diff.size
+    @desc_data['mean'] = stats_data.mean
+    @desc_diff['mean'] = stats_diff.mean
+    @desc_data['std'] = stats_data.standard_deviation
+    @desc_diff['std'] = stats_diff.standard_deviation
+    @desc_data['min'] = stats_data.min
+    @desc_diff['min'] = stats_diff.min
+    @desc_data['max'] = stats_data.max
+    @desc_diff['max'] = stats_diff.max
+    @desc_data['range'] = stats_data.range
+    @desc_diff['range'] = stats_diff.range
+
+	end
+
+
+	def set_diff_result(data, ave, last_data, rate, forcast)
+
+    @result = Hash.new
+    @result['latest_data'] = last_data
+    @result['latest_diff'] = data[data.size-1][1]
+    @result['latest_diff_mv'] = ave[data.size-1][1]
+    @result['appreciation_rate'] = rate
+    @result['forcast'] = last_data * rate
+    @result['forcast_err_mean'] = forcast.mean
+    @result['forcast_err_std'] = forcast.standard_deviation
+
+	end
+
+
+	def set_timeseries_chart(data, ave)
+
 		#======= Create Chart Data for Time Series Analysis =======
 
-		@timeseries_chart = LazyHighCharts::HighChart.new('graph') do |f|
+    @timeseries_chart = LazyHighCharts::HighChart.new('graph') do |f|
       f.title(text: "The Market Price of Bitcoin")
       f.subtitle(text: "source: blockchain.info")
       f.xAxis(type: 'datetime')
@@ -199,20 +235,24 @@ EOF
       f.series(
         name: "Actual Data",
         yAxis: 0,
-        data: timeseries_data
+        data: data
       )
-			f.series(
-				name: "Moving Average (5)",
-				yAxis: 0,
-				lineWidth: 2,
-				data: timeseries_ave
-			)
+      f.series(
+        name: "Moving Average (5)",
+        yAxis: 0,
+        lineWidth: 2,
+        data: ave
+      )
       f.chart({:defaultSeriesType=>"line"})
     end
+	end
 
-		#======= Create Chart Data for Differential Analysis =======
 
-		@diff_chart = LazyHighCharts::HighChart.new('graph') do |f|
+	def set_diff_chart(data, ave)
+
+	#======= Create Chart Data for Differential Analysis =======
+
+    @diff_chart = LazyHighCharts::HighChart.new('graph') do |f|
       f.title(text: "The Differential of Bitcoin")
       f.subtitle(text: "source: blockchain.info")
       f.xAxis(type: 'datetime')
@@ -234,22 +274,60 @@ EOF
       f.series(
         name: "Actual Data",
         yAxis: 0,
-        data: differential_data
+        data: data
       )
-			f.series(
+      f.series(
         name: "Moving Average(5)",
         yAxis: 0,
-				lineWidth: 2,
-        data: differential_ave
+        lineWidth: 2,
+        data: ave
       )
-			f.chart({:defaultSeriesType=>"line"})
-    end
+      f.chart({:defaultSeriesType=>"line"})
+		end
+	end
 
 
-		#======= Create Chart Data for Break Even Analysis
+	def set_bep_chart(coinbase, transferwise)
+
+    #======= Create Chart Data for Break Even Analysis
 
     @bep_chart = LazyHighCharts::HighChart.new('graph') do |f|
       f.title(text: "Break Even Point between Coinbase and Transferwise")
+      f.xAxis({title: {text: "Amount [USD]"}, type: 'number'})
+      f.yAxis [
+        {title: {text: "Fee [USD]"}, showFirstLabel: false },
+ ]
+      f.legend(align: 'right', verticalAlign: 'top', y: 75, x: -50, layout: 'vertical',)
+      f.plotOptions(line: {
+        marker: {
+          radius: 0
+        },
+        lineWidth: 1,
+        states: {
+          hover: {
+            lineWidth: 1
+          }
+        }
+      })
+      f.series(
+        name: "Coinbase",
+        data: coinbase,
+        lineWidth: 2
+      )
+      f.series(
+        name: "Transferwise",
+        data: transferwise,
+        lineWidth: 2
+      )
+      f.chart({:defaultSeriesType=>"line"})
+    end
+	end
+
+
+	def set_bepconf_chart(coinbase, transferwise, adjusted, conf)
+
+    @bep_chart_confidence = LazyHighCharts::HighChart.new('graph') do |f|
+      f.title(text: "Adjusted Break Even Point with time trend of Bitcoin exchange rate")
       f.xAxis({title: {text: "Amount [USD]"}, type: 'number'})
       f.yAxis [
         {title: {text: "Fee [USD]"}, showFirstLabel: false },
@@ -276,51 +354,20 @@ EOF
         data: @bep_transferwise,
         lineWidth: 2
       )
-      f.chart({:defaultSeriesType=>"line"})
-    end
-
-		@bep_chart_confidence = LazyHighCharts::HighChart.new('graph') do |f|
-			f.title(text: "Adjusted Break Even Point with time trend of Bitcoin exchange rate")
-			f.xAxis({title: {text: "Amount [USD]"}, type: 'number'})
-			f.yAxis [
-        {title: {text: "Fee [USD]"}, showFirstLabel: false },
- ]
-			f.legend(align: 'right', verticalAlign: 'top', y: 75, x: -50, layout: 'vertical',)
-			f.plotOptions(line: {
-				marker: {
-					radius: 0
-				},
-				lineWidth: 1,
-				states: {
-					hover: {
-						lineWidth: 1
-					}
-				}
-			})
-			f.series(
-				name: "Coinbase", 
-				data: @bep_coinbase,
-				lineWidth: 2
-			)
-			f.series(
-				name: "Transferwise",
-				data: @bep_transferwise,
-				lineWidth: 2
-			)
       f.series(
         name: "Coinbase (adjusted with bitcoin's appreciation)",
         data: @bep_coinbase_adjusted,
-				lineWidth: 2
+        lineWidth: 2
       )
-			f.series(
+      f.series(
         name: "Coinbase (adjusted with bitcoin's appreciation and 1STD range)",
         data: @bep_coinbase_1std,
-				type: 'arearange',
-				color: '#00ff00',
-				fillOpacity: 0.3,
+        type: 'arearange',
+        color: '#00ff00',
+        fillOpacity: 0.3,
         zIndex: 0
       )
-			f.chart({:defaultSeriesType=>"line"})
+      f.chart({:defaultSeriesType=>"line"})
 		end
 	end
 end

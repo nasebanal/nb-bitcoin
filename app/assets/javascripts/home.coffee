@@ -23,4 +23,4 @@ $(document).on "click", "#bep_menu", (e)->
 
 $(document).on "click", "#raw_data_menu", (e)->
   event.preventDefault()
-	$("html,body").animate({scrollTop:$('#raw_data').offset().top})
+  $("html,body").animate({scrollTop:$('#raw_data').offset().top})

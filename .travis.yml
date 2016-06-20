@@ -1,7 +1,10 @@
 language: ruby
 rvm:
-  - 2.3.1
+- 2.3.1
 before_script:
-  - psql -c "CREATE USER nasebanal WITH PASSWORD 'nasebanal';" -U postgres
-  - psql -c 'CREATE DATABASE "nb-bitcoin_test";' -U postgres
+- psql -c "CREATE USER nasebanal WITH PASSWORD 'nasebanal';" -U postgres
+- psql -c 'CREATE DATABASE "nb-bitcoin_test";' -U postgres
 script: bundle exec rspec spec
+env:
+  global:
+    secure: ZJPXa+rSqkqtbWg7dop6HV4oUR7rxJSGiOhQC1y1QspzI02fACVlboE6/E7BXC7U77s3Yc8HS+VuuuA5SRM83ylfUV3yEXgJiCXrmM8tZb6p2OaVcjt6NfPGOLx0v4Fn/+YWG7DhxX/cn9Q3TNkn6EV531s/StNLTJTAyxrY3ZEwh6H2WvgopdvVBSSwrqhS2hUuhV2Oyi9vXtpkoceDoXYK8s9i0WSutYZeUoEkeNgeUYAqADCCJDRjAWf3rhabp8O7W3GdNM4Fc8GqDmxJW07MO59ZUcD+cv5fG5A28Cjp15x6Ron87WnJiL5PUb0v9w5U3S281EoopK1cS9Kj/Q3QQvMHJw77dE9yoRi9OYtvCD2YIWn2ntTX5UYnO3EwSnXO07Cj/Kelf9NdGl0s0j4DaRXaeQFIU51+IcVx96VQwtaVpvA/61QzQsz4wie4itFdWuf5vCrM8QqwvwwJoizY2QjO+ppL5e5MiIB/i8k7pJHykxRmibOjf9FypSw8qB11DSleHwRtvhERY9GPTdGN5FWbdpmYV3QZpjWgrxetgehR5RcHz3e8PA0P5BEBA/HTMS694IlyhY2+r7Bw2WJvoY/7RiFSpWNXPycrg5hQCWu/J6rolYOljv5wOxIB2AeLNyIw8REn1cO75xpJ+5QIwtqWig/Fw2cHDLfQ6bw=

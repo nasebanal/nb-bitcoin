@@ -78,6 +78,7 @@ group :test do
   gem 'minitest-reporters'
 	gem 'mini_backtrace'
 	gem 'guard'
+	gem 'codeclimate-test-reporter', require: nil
 end
 
 group :production do
