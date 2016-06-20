@@ -34,6 +34,9 @@ gem 'rest-client'
 gem 'less-rails'
 gem 'twitter-bootstrap-rails'
 
+# Font Awesome
+gem 'font-awesome-rails'
+
 # Highcharts
 gem 'lazy_high_charts'
 
