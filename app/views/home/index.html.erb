@@ -1,4 +1,4 @@
-<a name="timeseries" class="anchor"></a>
+<div id="timeseries">
 <h3>Time Series Analysis</h3>
 
 <a href="/?duration=30days">30days</a> - 
@@ -15,11 +15,11 @@
 
 <br>
 
-<%= high_chart("timeseries", @timeseries_chart) %>
+<%= high_chart("timeseries_chart", @timeseries_chart) %>
 
 <br>
 
-<%= high_chart("difference", @diff_chart) %>
+<%= high_chart("diff_chart", @diff_chart) %>
 
 <br><br>
 
@@ -41,9 +41,9 @@
 		<% end %>
 	</tbody>
 </table>
+</div>
 
-<a name="stats" class="anchor"></a>
-<h3>Descriptive Statistics</h3>
+<h3 id="stats">Descriptive Statistics</h3>
 
 <table class="table table-hover table-sm">
 	<caption>Descriptive Statistics of Bitcoin</caption>
@@ -142,14 +142,13 @@
 
 
 
-<a name="bep" class="anchor"></a>
-<h3>Break Even Point</h3>
+<h3 id="bep">Break Even Point</h3>
 
-<%= high_chart("bep", @bep_chart) %>
+<%= high_chart("bep_chart", @bep_chart) %>
 
 <br>
 
-<%= high_chart("bep_confidence", @bep_chart_confidence) %>
+<%= high_chart("bep_confidence_chart", @bep_chart_confidence) %>
 
 <br><br>
 
@@ -185,7 +184,7 @@
   </tbody>>
 </table>
 
-<a name="raw_data" class="anchor"></a>
-<h3>Raw Data</h3>
+<h3 id="raw_data">Raw Data</h3>
 
 <%= @json_data %>
+

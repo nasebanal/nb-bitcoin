@@ -8,3 +8,19 @@ $(document).on "click", "#show_duration", (e)->
 $(document).on "click", "#download", (e)->
 	event.preventDefault()
 	window.location.href = "https://blockchain.info/charts/market-price?showDataPoints=false&timespan=" + $('#duration').val() + "days&show_header=true&daysAverageString=1&scale=0&format=csv&address="
+
+$(document).on "click", "#timeseries_menu", (e)->
+	event.preventDefault()
+	$("html,body").animate({scrollTop:$('#timeseries').offset().top-70})
+
+$(document).on "click", "#stats_menu", (e)->
+  event.preventDefault()
+  $("html,body").animate({scrollTop:$('#stats').offset().top-70})
+
+$(document).on "click", "#bep_menu", (e)->
+  event.preventDefault()
+  $("html,body").animate({scrollTop:$('#bep').offset().top-70})
+
+$(document).on "click", "#raw_data_menu", (e)->
+  event.preventDefault()
+  $("html,body").animate({scrollTop:$('#raw_data').offset().top-70})
